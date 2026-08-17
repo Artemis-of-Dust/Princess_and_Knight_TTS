@@ -1,4 +1,5 @@
 activeGitCommit = "5beb4211d66821f33a4de588e84005d875ac07fb"
+setUninteractables = true
 
 -- UTILITY FUNCTIONS
 -- Used throughout the various scripts as a general-purpose function.
@@ -183,6 +184,12 @@ local playerData = {
             green = 0,
             blue = 2,
             },
+        cities = {
+            white = 0,
+            blue = 0,
+            green = 0,
+            red = 0,
+            },
         },
     Green = {
         faction = 2,
@@ -194,6 +201,12 @@ local playerData = {
             red = 0,
             green = 0,
             blue = 2,
+            },
+        cities = {
+            white = 0,
+            blue = 0,
+            green = 0,
+            red = 0,
             },
         },
     Yellow = {
@@ -207,6 +220,12 @@ local playerData = {
             green = 0,
             blue = 2,
             },
+        cities = {
+            white = 0,
+            blue = 0,
+            green = 0,
+            red = 0,
+            },
         },
     Orange = {
         faction = 4,
@@ -219,6 +238,12 @@ local playerData = {
             green = 0,
             blue = 2,
             },
+        cities = {
+            white = 0,
+            blue = 0,
+            green = 0,
+            red = 0,
+            },
         },
     Blue = {
         faction = 5,
@@ -230,6 +255,12 @@ local playerData = {
             red = 0,
             green = 0,
             blue = 2,
+            },
+        cities = {
+            white = 0,
+            blue = 0,
+            green = 0,
+            red = 0,
             },
         },
 }
@@ -295,6 +326,7 @@ local templateObjects = {
     LuaScriptState = "",
     XmlUI        = "",
     ContainedObjects = {},
+    AttachedSnapPoints = {},
     },
     Board = {
         GUID           = nil,
@@ -353,7 +385,7 @@ local templateObjects = {
         LuaScript      = "",
         LuaScriptState = "",
         XmlUI          = "",
-        AttachedSnapPoints = {}
+        AttachedSnapPoints = {},
         },
     Token = {
         GUID           = nil,
@@ -365,9 +397,9 @@ local templateObjects = {
             rotX   = 0,
             rotY   = 0,
             rotZ   = 0,
-            scaleX = 0.24,
-            scaleY = 0.24,
-            scaleZ = 0.24,
+            scaleX = 0.23,
+            scaleY = 0.23,
+            scaleZ = 0.23,
           },
         Nickname       = "",
         Description    = "",
@@ -409,7 +441,8 @@ local templateObjects = {
             },
         LuaScript      = "",
         LuaScriptState = "",
-        XmlUI          = ""
+        XmlUI          = "",
+        AttachedSnapPoints = {},
         },
     Disc = {
         GUID           = nil,
@@ -465,7 +498,8 @@ local templateObjects = {
             },
         LuaScript      = "",
         LuaScriptState = "",
-        XmlUI          = ""
+        XmlUI          = "",
+        AttachedSnapPoints = {},
         },
     Pawn = {
         GUID           = nil,
@@ -511,7 +545,8 @@ local templateObjects = {
         Hands          = false,
         LuaScript      = "",
         LuaScriptState = "",
-        XmlUI          = ""
+        XmlUI          = "",
+        AttachedSnapPoints = {},
         },
     CustomDisc = {
     GUID           = nil,
@@ -680,6 +715,7 @@ local templateObjects = {
     LuaScriptState = "",
     XmlUI        = "",
     ContainedObjects = {},
+    AttachedSnapPoints = {},
     },
     
 }
@@ -692,8 +728,11 @@ local boardSnapPoints = {
     Chi2 = {x= 0.000, z=-0.90, rotation=0, tags={}},
     Chi3 = {x= 0.125, z=-0.90, rotation=0, tags={}},
     -- Character Card slots
-    Cha1 = {x=-0.763, z=-0.385, rotation=0, tags={}},
-    Cha2 = {x= 0.763, z=-0.385, rotation=0, tags={}},
+    Cha1 = {x=-0.763, z=-0.385, rotation=0, tags={"Piece_CharCard"}},
+    Cha2 = {x= 0.763, z=-0.385, rotation=0, tags={"Piece_CharCard"}},
+    -- Bond Action chip slots (to sit above the Character cards)
+    Bon1 = {x=-0.763, z=-0.275, rotation=0, tags={"Piece_BondChip"}},
+    Bon2 = {x= 0.763, z=-0.275, rotation=0, tags={"Piece_BondChip"}},
     -- Relationship Track
     Rel1  = {x=-0.930, z=0.15, rotation=0, tags={}},
     Rel2  = {x=-0.775, z=0.15, rotation=0, tags={}},
@@ -827,6 +866,31 @@ local templateDeckData = {
         uniqueBack = false,
     },
 }
+local cardSnapPoints = {
+    RoyalOrder = {
+        {x=-0.576, z=0.34, tags={"Piece_FactionMarker"}},
+        {x= 0.000, z=0.34, tags={"Piece_FactionMarker"}},
+        {x= 0.576, z=0.34, tags={"Piece_FactionMarker"}},
+        {x=-0.288, z=0.92, tags={"Piece_FactionMarker"}},
+        {x= 0.288, z=0.92, tags={"Piece_FactionMarker"}},
+    },
+    GrandManifest = {
+        {x=-0.57, z=-0.650, tags={"Piece_PopularSupportChip"}},
+        {x=-0.57, z= 0.115, tags={"Piece_PopularSupportChip"}},
+        {x=-0.57, z= 0.880, tags={"Piece_PopularSupportChip"}},
+    },
+    Manifest = {
+        {x=-0.57, z=-0.200, tags={"Piece_PopularSupportChip"}},
+        {x=-0.57, z= 0.385, tags={"Piece_PopularSupportChip"}},
+        {x=-0.57, z= 0.970, tags={"Piece_PopularSupportChip"}},
+    },
+}
+local tableObjects = {
+    -- These start out instantiated as GUID strings but get replaced after onLoad() with the object reference.
+    -- This is done due to a limitation of TTS unable to reference objects until after they are first loaded.
+    ExpeditionBoard = "8a3f76"
+}
+
 
 -- CORE FUNCTIONS
 function onLoad(saved_state)
@@ -843,16 +907,44 @@ function onLoad(saved_state)
         end
     end
 
+    -- Find major objects for functions
+    for key, GUID in pairs(tableObjects) do
+        tableObjects[key] = getObjectFromGUID(GUID)
+    end
+
     -- Generate scripted objects (usually based on tags assigned to objects to reduce duplicate scripting!)
     generateButtons()
     generateCounters()
+    generateAllyCityCounters()
+    
+    -- Reset the snappoints on cards.
+    setCardSnapPoints()
     
     -- Set marked objects to be uninteractable
-    for _, object in ipairs(getObjectsWithTag("Uninteractable")) do
-        object.interactable = false
+    if setUninteractables then
+        for _, object in ipairs(getObjectsWithTag("Uninteractable")) do
+            object.interactable = false
+        end
     end
-    
 end
+
+function onObjectCollisionEnter(registered_object, collision_info)
+    updatePlayerAllies(registered_object, collision_info)
+end
+
+function onObjectCollisionExit(registered_object, collision_info)
+    -- We add a short delay just make sure the object has time to actually leave the detection range when being removed.
+    Wait.time(
+        function()
+            updatePlayerAllies(registered_object, collision_info)
+        end,
+        0.1)
+end
+
+function onSave()
+    return JSON.encode({playerData, setupData})
+end
+
 
 
 -- FACTION SELECT FUNCTIONS
@@ -1163,6 +1255,7 @@ function generateObject(arg)
         tileType      =
         tileThickness =
         customDeck    =
+        snappoints    =
         }
     ]=]
     local objType = arg.objType
@@ -1216,6 +1309,24 @@ function generateObject(arg)
     if objData.tags then
         for _, tag in ipairs(objData.tags) do
             table.insert(outputObject.Tags, tag)
+        end
+    end
+    
+    if objData.snappoints then
+        for _, snappoint in pairs(objData.snappoints) do
+            local snapPointData = {
+                Position = {
+                    x = snappoint.position and snappoint.position.x or 0,
+                    y = snappoint.position and snappoint.position.y or 0,
+                    z = snappoint.position and snappoint.position.z or 0,
+                    },
+                Rotation = snappoint.rotiation and {
+                    snappoint.rotation.x or 0,
+                    snappoint.rotation.y or 0,
+                    snappoint.rotation.z or 0} or nil,
+                Tags = snappoint.tags or {}
+            }
+            table.insert(outputObject.AttachedSnapPoints, snapPointData)
         end
     end
     
@@ -1422,7 +1533,7 @@ function generateCharacterCard(player, princessCard, factionNum, variantMode)
                 or (not princessCard) and (variantMode) and factionData[factionNum].knightCardTooltipB
                 or "",
             colour   = {r=255, g=255, b=255},
-            tags     = variantMode and {"Module_CharCards"} or {},
+            tags     = variantMode and {"Module_CharCards", "Piece_CharCard"} or {"Piece_CharCard"},
             }
         })
     
@@ -1513,7 +1624,7 @@ function setFaction(player, factionNum)
                     frontURL = factionData[factionNum].relationMarkerKnight,
                     backURL = factionData[factionNum].relationMarkerPrincess,
                     colour   = {r=243, g=111, b=162},
-                    tags     = {}
+                    tags     = {"Piece_BondChip"}
                     }
                 }),
             playerBoard  = playerBoard,
@@ -1528,7 +1639,7 @@ function setFaction(player, factionNum)
                     frontURL = factionData[factionNum].relationMarkerPrincess,
                     backURL = factionData[factionNum].relationMarkerKnight,
                     colour   = {r=243, g=111, b=162},
-                    tags     = {}
+                    tags     = {"Piece_BondChip"}
                     }
                 }),
             playerBoard  = playerBoard,
@@ -2292,6 +2403,58 @@ end
 
 
 
+-- CARD SNAPPOINT FUNCTIONS
+function setCardSnapPoints()
+    -- Royal Orders
+    for _, obj in ipairs(getObjectsWithTag("Deck_RoyalOrder")) do
+        setSnapPointsToDeckCards(obj, cardSnapPoints["RoyalOrder"])
+        obj.shuffle()
+    end
+    
+    -- Grand Manifest
+    for _, obj in ipairs(getObjectsWithTag("Deck_GrandManifest")) do
+        setSnapPointsToDeckCards(obj, cardSnapPoints["GrandManifest"])
+        obj.shuffle()
+    end
+    
+    -- Grand Manifest
+    for _, obj in ipairs(getObjectsWithTag("Deck_Manifest")) do
+        setSnapPointsToDeckCards(obj, cardSnapPoints["Manifest"])
+        obj.shuffle()
+    end
+end 
+
+function setSnapPointsToDeckCards(deckObj, snapPointData)
+    for _, card in pairs(deckObj.getObjects()) do
+        local cardObj = deckObj.takeObject({guid=card.guid})
+        
+        local generatedSnapPoints = {}
+        for _, snapPoint in pairs(snapPointData) do
+        table.insert(generatedSnapPoints, {
+            position = {
+                x = snapPoint.x,
+                y = (snapPoint.y or 0) + 0.5,
+                z = snapPoint.z,
+                },
+            rotation = snapPoint.rotation and {
+                x = 0,
+                y = (snapPoint.rotation),
+                z = 0,
+                } or nil,
+            rotation_snap = snapPoint.rotation ~= nil and true or false,
+            tags = snapPoint.tags or {}
+            })
+        end
+        
+        cardObj.setSnapPoints(generatedSnapPoints)
+        
+        deckObj.putObject(cardObj)
+        cardObj.destruct()
+    end
+end
+
+
+
 -- RESOURCE COUNTER FUNTIONS
 function generateCounters()
 
@@ -2394,6 +2557,99 @@ function updateResourceCounter(playerColour, targetResource, value)
     end
 end
 
-function onSave()
-    return JSON.encode({playerData, setupData})
+
+
+-- ALLY CITY COUNTER FUNCTIONS
+function generateAllyCityCounters()
+
+    -- Look through all objects for objects with a "Func_AllyCounter".
+    for _, obj in ipairs(getObjects()) do
+        local targetPlayer = nil
+        local targetAllyType = nil
+        for _, tag in ipairs(obj.getTags()) do
+            if string.find(tag, "Func_AllyCounter_") then
+                targetAllyType =  string.sub(tag, 22)
+            elseif string.find(tag, "PlayerAssigned_") then
+                targetPlayer =  string.sub(tag, 16)
+            end
+        end
+        
+        if targetPlayer and targetAllyType then
+            createAllyCityCOunter(obj, targetPlayer, targetAllyType)
+        end
+    end
+end
+
+function createAllyCityCOunter(obj, targetPlayer, targetAllyType)
+    local currentValue = playerData[targetPlayer].cities[string.lower(targetAllyType)]
+    local labelPos = {0, 0.31, 0.1}
+    
+    -- Text shadow! (Weirdly the LAST label is the one rendered on top. TTS, I swear to the Gods.)
+    obj.createButton({
+      label=tostring(currentValue),
+      click_function="none",
+      function_owner=self,
+      position={
+        labelPos[1] + 0.05,
+        labelPos[2] - 0.005,
+        labelPos[3] + 0.05,
+        },
+      height=0,
+      width=0,
+      font_size=750,
+      font_color={r=0, g=0, b=0, a=93}, -- Weirdly these are /100 and not /255
+      color={r=0, g=0, b=0, a=0}
+      })
+    -- The actual button.
+    obj.createButton({
+      label=tostring(currentValue),
+      click_function="None",
+      function_owner=self,
+      position=labelPos,
+      height=0,
+      width=0,
+      font_size=750,
+      font_color={r=255, g=255, b=255, a=255},
+      color={r=0, g=0, b=0, a=0}
+      })
+end
+
+function updateAllyCityCounter(playerColour, targetAllyType, value)
+    -- Find the relevant counter
+    for _, obj in ipairs(getObjectsWithTag("Func_AllyCounter_" .. targetAllyType)) do
+        for _, tag in ipairs(obj.getTags()) do
+            if tag == ("PlayerAssigned_" .. playerColour) then
+                obj.editButton({
+                    index=0,
+                    label=tostring(value),
+                    tooltip=tostring(value),
+                    })
+                obj.editButton({
+                    index=1,
+                    label=tostring(value),
+                    tooltip=tostring(value),
+                    })
+            end
+        end
+    end
+end
+
+function updatePlayerAllies(registered_object, collision_info)
+    if registered_object ~= tableObjects.ExpeditionBoard then return end
+    
+    local playerColor = nil
+    for _, tag in ipairs(collision_info.collision_object.getTags()) do
+        if string.find(tag, "PlayerOwned_") then
+            playerColor =  string.sub(tag, 13)
+        end
+    end
+    if playerColor == nil then return end
+
+    local allyCityCounts = tableObjects.ExpeditionBoard.call("countAllyCity", "PlayerOwned_" .. playerColor)
+    for allyType, allyCount in pairs(allyCityCounts) do
+        updateAllyCityCounter(playerColor, allyType, allyCount)
+        playerData[playerColor].cities[string.lower(allyType)] = allyCount
+    end
+    
+    onSave()
 end
