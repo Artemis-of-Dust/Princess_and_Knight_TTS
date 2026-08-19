@@ -22,6 +22,70 @@ function deepcopy(orig)
     return copy
 end
 
+-- Creates a list of all Card objects with all given tags (optional).
+-- If a card is inside a Deck, it will first remove it from the Deck (note this removal happens immediately).
+function getCardsByTagsGlobal(tagList, excludeTagList)
+    local tagList = tagList or {}
+    local excludeTagList = excludeTagList or {}
+    local foundCards = {}
+    for _, obj in ipairs(getObjects()) do
+        -- Individual cards
+        if obj.type == "Card" then
+            local cardValid = true
+            for _, tag in pairs(tagList) do
+                if obj.hasTag(tag) == false then
+                    cardValid = false
+                end
+            end
+            for _, tag in pairs(excludeTagList) do
+                if obj.hasTag(tag) then
+                    cardValid = false
+                end
+            end
+            if cardValid then
+                table.insert(foundCards, obj)
+            end
+        
+        -- Search decks for valid cards contained within
+        elseif obj.type == "Deck" then
+            for _, card in pairs(obj.getObjects()) do
+                local searchValid = true
+                
+                for _, tag in pairs(tagList) do
+                    local foundTag = false
+                    for _, cardTag in pairs(card.tags) do
+                        if cardTag == tag then
+                            foundTag = true
+                        end
+                    end
+                    if foundTag == false then
+                        searchValid = false
+                    end
+                end
+                
+                for _, tag in pairs(excludeTagList) do
+                    for _, cardTag in pairs(card.tags) do
+                        if cardTag == tag then
+                            searchValid = false
+                        end
+                    end
+                end
+                
+                if searchValid then
+                    local cardObj = obj.remainder
+                    if cardObj == nil then
+                        cardObj = obj.takeObject({position=obj.getPosition(), guid=card.guid})
+                    end
+                    
+                    table.insert(foundCards, cardObj)
+                end
+            end
+        end
+    end
+    
+    return foundCards
+end
+
 
 -- PREDEFINED DATA
 local factionData = {
@@ -748,34 +812,34 @@ local boardSnapPoints = {
     Rel12 = {x= 0.775, z=0.15, rotation=0, tags={}},
     Rel13 = {x= 0.930, z=0.15, rotation=0, tags={}},
     -- Cargo Track
-    Car1 = {x=-0.762,   z=0.325, rotation=0, tags={}},
-    Car2 = {x=-0.623,   z=0.325, rotation=0, tags={}},
-    Car3 = {x=-0.483,   z=0.325, rotation=0, tags={}},
-    Car4 = {x=-0.344,   z=0.325, rotation=0, tags={}},
-    Car5 = {x=-0.205,   z=0.325, rotation=0, tags={}},
-    Car6 = {x=-0.066,   z=0.325, rotation=0, tags={}},
-    Car7 = {x= 0.074,   z=0.325, rotation=0, tags={}},
-    Car8 = {x= 0.213,   z=0.325, rotation=0, tags={}},
-    Car9 = {x= 0.352,   z=0.325, rotation=0, tags={}},
-    Car10 = {x= 0.492,   z=0.325, rotation=0, tags={}},
+    Car1  = {x=-0.762,  z=0.325, tags={}},
+    Car2  = {x=-0.623,  z=0.325, tags={}},
+    Car3  = {x=-0.483,  z=0.325, tags={}},
+    Car4  = {x=-0.344,  z=0.325, tags={}},
+    Car5  = {x=-0.205,  z=0.325, tags={}},
+    Car6  = {x=-0.066,  z=0.325, tags={}},
+    Car7  = {x= 0.074,  z=0.325, tags={}},
+    Car8  = {x= 0.213,  z=0.325, tags={}},
+    Car9  = {x= 0.352,  z=0.325, tags={}},
+    Car10 = {x= 0.492,  z=0.325, tags={}},
     -- Development Track: Socialise
-    Soc1 = {x=-0.591,   z=0.53, rotation=0, tags={}},
-    Soc2 = {x=-0.288,   z=0.53, rotation=0, tags={}},
-    Soc3 = {x= 0.015,   z=0.53, rotation=0, tags={}},
-    Soc4 = {x= 0.318,   z=0.53, rotation=0, tags={}},
-    Soc5 = {x= 0.621,   z=0.53, rotation=0, tags={}},
+    Soc1 = {x=-0.591,   z=0.53, tags={"Piece_Disc"}},
+    Soc2 = {x=-0.288,   z=0.53, tags={"Piece_Disc"}},
+    Soc3 = {x= 0.015,   z=0.53, tags={"Piece_Disc"}},
+    Soc4 = {x= 0.318,   z=0.53, tags={"Piece_Disc"}},
+    Soc5 = {x= 0.621,   z=0.53, tags={"Piece_Disc"}},
     -- Development Track: Trade
-    Tra1 = {x=-0.591,   z=0.71, rotation=0, tags={}},
-    Tra2 = {x=-0.288,   z=0.71, rotation=0, tags={}},
-    Tra3 = {x= 0.015,   z=0.71, rotation=0, tags={}},
-    Tra4 = {x= 0.318,   z=0.71, rotation=0, tags={}},
-    Tra5 = {x= 0.621,   z=0.71, rotation=0, tags={}},
+    Tra1 = {x=-0.591,   z=0.71, tags={"Piece_Disc"}},
+    Tra2 = {x=-0.288,   z=0.71, tags={"Piece_Disc"}},
+    Tra3 = {x= 0.015,   z=0.71, tags={"Piece_Disc"}},
+    Tra4 = {x= 0.318,   z=0.71, tags={"Piece_Disc"}},
+    Tra5 = {x= 0.621,   z=0.71, tags={"Piece_Disc"}},
     -- Development Track: Audience
-    Aud1 = {x=-0.591,   z=0.89, rotation=0, tags={}},
-    Aud2 = {x=-0.288,   z=0.89, rotation=0, tags={}},
-    Aud3 = {x= 0.015,   z=0.89, rotation=0, tags={}},
-    Aud4 = {x= 0.318,   z=0.89, rotation=0, tags={}},
-    Aud5 = {x= 0.621,   z=0.89, rotation=0, tags={}},
+    Aud1 = {x=-0.591,   z=0.89, tags={"Piece_Disc"}},
+    Aud2 = {x=-0.288,   z=0.89, tags={"Piece_Disc"}},
+    Aud3 = {x= 0.015,   z=0.89, tags={"Piece_Disc"}},
+    Aud4 = {x= 0.318,   z=0.89, tags={"Piece_Disc"}},
+    Aud5 = {x= 0.621,   z=0.89, tags={"Piece_Disc"}},
     -- Active card spaces, for played Manifest and Episode cards.
     Pla1  = {x=-1.100,  z=-1.475, rotation=0, tags={}},
     Pla2  = {x=-0.660,  z=-1.475, rotation=0, tags={}},
@@ -791,22 +855,22 @@ local boardSnapPoints = {
     Pla12 = {x= 1.100,  z=-2.350, rotation=0, tags={}},
     -- Additional unusable snapPoints for spawning purposes.
       -- Action Decks
-    Ext1 = {x= 1.400,   z= -1.00, rotation=0, tags={"~tag"}},
-    Ext2 = {x= 1.400,   z= -0.10, rotation=0, tags={"~tag"}},
-    Ext3 = {x= 1.400,   z=  0.80, rotation=0, tags={"~tag"}},
-    Ext4 = {x= 0.000,   z=  1.50, rotation=0, tags={"~tag"}},
+    Ext1 = {x= 1.280,   z= -0.56, tags={"~tag"}},
+    --Ext2 = {x= 1.400,   z= -0.10, rotation=0, tags={"~tag"}},
+    --Ext3 = {x= 1.400,   z=  0.80, rotation=0, tags={"~tag"}},
+    Ext4 = {x= 0.000,   z=  1.50, tags={"~tag"}},
       -- VP Scoring Tiles
-    Ext5 = {x=-1.200,   z= -0.75, rotation=0, tags={"~tag"}},
-    Ext6 = {x=-1.550,   z= -0.75, rotation=0, tags={"~tag"}},
+    Ext5 = {x=-1.200,   z= -0.75, tags={"~tag"}},
+    Ext6 = {x=-1.550,   z= -0.75, tags={"~tag"}},
       -- Faction Markers
-    Ext7  = {x=-1.100,   z= -1.10, rotation=0, tags={"~tag"}},
-    Ext8  = {x=-1.225,   z= -1.10, rotation=0, tags={"~tag"}},
-    Ext9  = {x=-1.350,   z= -1.10, rotation=0, tags={"~tag"}},
-    Ext10 = {x=-1.475,   z= -1.10, rotation=0, tags={"~tag"}},
+    Ext7  = {x=-1.100,   z= -1.10, tags={"~tag"}},
+    Ext8  = {x=-1.225,   z= -1.10, tags={"~tag"}},
+    Ext9  = {x=-1.350,   z= -1.10, tags={"~tag"}},
+    Ext10 = {x=-1.475,   z= -1.10, tags={"~tag"}},
       -- Knight Pawns
-    Ext11 = {x=-1.100,   z= -1.25, rotation=0, tags={"~tag"}},
-    Ext12 = {x=-1.225,   z= -1.25, rotation=0, tags={"~tag"}},
-    Ext13 = {x=-1.350,   z= -1.25, rotation=0, tags={"~tag"}},
+    Ext11 = {x=-1.100,   z= -1.25, tags={"~tag"}},
+    Ext12 = {x=-1.225,   z= -1.25, tags={"~tag"}},
+    Ext13 = {x=-1.350,   z= -1.25, tags={"~tag"}},
 }
 local templateDeckData = {
    Character = {
@@ -929,14 +993,14 @@ function onLoad(saved_state)
 end
 
 function onObjectCollisionEnter(registered_object, collision_info)
-    updatePlayerAllies(registered_object, collision_info)
+    updateCollisionPlayerAllies(registered_object, collision_info)
 end
 
 function onObjectCollisionExit(registered_object, collision_info)
     -- We add a short delay just make sure the object has time to actually leave the detection range when being removed.
     Wait.time(
         function()
-            updatePlayerAllies(registered_object, collision_info)
+            updateCollisionPlayerAllies(registered_object, collision_info)
         end,
         0.1)
 end
@@ -1386,7 +1450,7 @@ function spawnComponent(arg)
     
     local spawnRotation = {
         x = boardRotation.x + 0,
-        y = boardRotation.y + snapPoint.rotation + offset.rotation,
+        y = boardRotation.y + (snapPoint.rotation or 0) + offset.rotation,
         z = boardRotation.z + (flipped and 180 or 0)
     }
     
@@ -1436,11 +1500,11 @@ function generateBoard(player, factionNum)
                 y = 0.40,
                 z = snapPoint.z
                 },
-            Rotation = {
+            Rotation = snapPoint.rotation and {
                 x = 0,
                 y = snapPoint.rotation,
                 z = 0
-                },
+                } or nil,
             Tags = deepcopy(snapPoint.tags)
             })
     end
@@ -1448,55 +1512,57 @@ function generateBoard(player, factionNum)
     return outputObject
 end
 
-function generateActionDeck(deckType, player, factionRow)
-
-    deckData = {
-        FaceURL      = templateDeckData[deckType].front,
-        BackURL      = templateDeckData[deckType].back,
-        NumWidth     = templateDeckData[deckType].gridWidth,
-        NumHeight    = templateDeckData[deckType].gridHeight,
-        BackIsHidden = true,
-        UniqueBack   = templateDeckData[deckType].uniqueBack,
-        Type = 0
-        }
+function generateActionDeck(deckTypes, player, factionRow)
     
     local outputObject = generateObject({
             objType = "Deck",
             player  = player,
             objData = {
-                tags = {"Deck_" .. deckType},
+                tags = {},
                 }
             })
     
-    outputObject.CustomDeck = {
-        ["1"] = deckData
-    }
-
-    -- Iterate over all cards from the given row and add it to the deck
-    for i = 0, (deckData.NumWidth - 1), 1 do
-        -- TTS REQUIRES the number be formatted as a 2 digit ID concatenated to the CustomDeck ID number.
-        -- i.e. The first card must be X00, followed by X01. We probably skip some here so we need to count
-        --   where our desired index is using the faction's row number.
-        
-        local baseIndex = (factionRow - 1) * deckData.NumWidth
-        local GeneratedID = "1" .. string.format("%02d" , (baseIndex + i))
-        
-        table.insert(outputObject.ContainedObjects, {
-            Name = "Card",
-            Nickname = "",
-            CardID   = GeneratedID,
-            CustomDeck = {
-                ["1"]  = deckData
-                } 
-        })
-        
-        table.insert(outputObject.DeckIDs, GeneratedID)
+    outputObject.CustomDeck = {}
+    for i, deckType in ipairs(deckTypes) do
+        deckData = {
+            FaceURL      = templateDeckData[deckType].front,
+            BackURL      = templateDeckData[deckType].back,
+            NumWidth     = templateDeckData[deckType].gridWidth,
+            NumHeight    = templateDeckData[deckType].gridHeight,
+            BackIsHidden = true,
+            UniqueBack   = templateDeckData[deckType].uniqueBack,
+            Type = 0
+            }
+            
+        outputObject.CustomDeck[i] = deckData
+            
+        -- Iterate over all cards from the given rows and add it to the deck
+        for n = 0, (deckData.NumWidth - 1), 1 do
+            -- TTS REQUIRES the number be formatted as a 2 digit ID concatenated to the CustomDeck ID number.
+            -- i.e. The first card must be X00, followed by X01. We probably skip some here so we need to count
+            --   where our desired index is using the faction's row number.
+            
+            local baseIndex = (factionRow - 1) * deckData.NumWidth
+            local GeneratedID = i .. string.format("%02d" , (baseIndex + i))
+            
+            table.insert(outputObject.ContainedObjects, {
+                Name = "Card",
+                Nickname = "",
+                CardID   = GeneratedID,
+                CustomDeck = {
+                    [i]  = deckData
+                    },
+                Tags     = {"Piece_" .. deckType .. "Card"}
+            })
+            
+            table.insert(outputObject.DeckIDs, GeneratedID)
+        end
     end
     
     -- Tag ownership to the player
     if player ~= nil then
         for i, card in ipairs(outputObject.ContainedObjects) do
-            card.Tags = {"PlayerOwned_" .. player}
+            table.insert(card.Tags, "PlayerOwned_" .. player)
         end
     end
     
@@ -1568,7 +1634,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Rel13"
+            snapPoint    = "Rel13",
+            offset   = {x = 0, y = -0.06, x = 0},
             })
     spawnComponent({
             objData      = generateObject({
@@ -1581,7 +1648,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Rel1"
+            snapPoint    = "Rel1",
+            offset   = {x = 0, y = -0.06, x = 0},
             })
     
     -- Action markers
@@ -1597,7 +1665,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Chi3"
+            snapPoint    = "Chi3",
+            offset   = {x = 0, y = -0.05, x = 0},
             })
     spawnComponent({
             objData      = generateObject({
@@ -1611,7 +1680,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Chi1"
+            snapPoint    = "Chi1",
+            offset   = {x = 0, y = -0.05, x = 0},
             })
     
     -- Bond Chips
@@ -1628,7 +1698,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Chi2"
+            snapPoint    = "Chi2",
+            offset   = {x = 0, y = -0.05, x = 0},
             })
     spawnComponent({
             objData      = generateObject({
@@ -1643,7 +1714,7 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            offset   = {x = 0, y = 0.2, x = 0},
+            offset   = {x = 0, y = 0.15, x = 0},
             snapPoint    = "Chi2"
             })
     
@@ -1725,31 +1796,18 @@ function setFaction(player, factionNum)
     end
     
     -- Action Decks
-    spawnComponent({
-            objData      = generateActionDeck("Action1", player, factionData[factionNum].deckRow),
+    local ActionDeck123 = spawnComponent({
+            objData      = generateActionDeck({"Action1", "Action2", "Action3"}, player, factionData[factionNum].deckRow),
             playerBoard  = playerBoard,
-            offset   = {x = 10, y = 0, x = 0},
+            offset   = {x = 0, y = -0.26, z = 0},
             snapPoint    = "Ext1",
             flipped      = true,
             })
-    spawnComponent({
-            objData      = generateActionDeck("Action2", player, factionData[factionNum].deckRow),
-            playerBoard  = playerBoard,
-            offset   = {x = 10, y = 0, x = 0},
-            snapPoint    = "Ext2",
-            flipped      = true,
-            })
-    spawnComponent({
-            objData      = generateActionDeck("Action3", player, factionData[factionNum].deckRow),
-            playerBoard  = playerBoard,
-            offset   = {x = 10, y = 0, x = 0},
-            snapPoint    = "Ext3",
-            flipped      = true,
-            })
+    ActionDeck123.setName(factionData[factionNum].name ..  " Action Deck")        
     local ActionDeck0 = spawnComponent({
-            objData      = generateActionDeck("Action0", player, factionData[factionNum].deckRow),
+            objData      = generateActionDeck({"Action0"}, player, factionData[factionNum].deckRow),
             playerBoard  = playerBoard,
-            offset   = {x = 10, y = 0, x = 0},
+            offset   = {x = 0, y = 0, z = 0},
             snapPoint    = "Ext4",
             handDeal = player,
             })
@@ -1769,7 +1827,7 @@ function setFaction(player, factionNum)
                     tags     = {}
                     }
                 }),
-            offset   = {x=0, y=-0.3, z=0},
+            offset   = {x=0, y=-0.36, z=0},
             playerBoard  = playerBoard,
             snapPoint    = "Ext5"
             })
@@ -1789,7 +1847,7 @@ function setFaction(player, factionNum)
                     tags     = {"Module_Expansion"}
                     }
                 }),
-            offset   = {x=0, y=-0.3, z=0},
+            offset   = {x=0, y=-0.36, z=0},
             playerBoard  = playerBoard,
             snapPoint    = "Ext6"
             })
@@ -1807,7 +1865,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Ext7"
+            snapPoint    = "Ext7",
+            offset   = {x = 0, y = -0.36, x = 0},
             })
     spawnComponent({
             objData      = generateObject({
@@ -1821,7 +1880,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Ext8"
+            snapPoint    = "Ext8",
+            offset   = {x = 0, y = -0.36, x = 0},
             })
     spawnComponent({
             objData      = generateObject({
@@ -1835,7 +1895,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Ext9"
+            snapPoint    = "Ext9",
+            offset   = {x = 0, y = -0.36, x = 0},
             })
             
     -- Grand Duke's Eval Marker
@@ -1854,7 +1915,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Ext10"
+            snapPoint    = "Ext10",
+            offset   = {x = 0, y = -0.30, x = 0},
             })
 
     -- Knight's Pawns
@@ -1873,7 +1935,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Ext11"
+            snapPoint    = "Ext11",
+            offset   = {x = 0, y = -0.36, x = 0},
             })
     spawnComponent({
             objData = generateObject({
@@ -1890,7 +1953,8 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Ext12"
+            snapPoint    = "Ext12",
+            offset   = {x = 0, y = -0.36, x = 0},
             })
     spawnComponent({
             objData = generateObject({
@@ -1907,9 +1971,13 @@ function setFaction(player, factionNum)
                     }
                 }),
             playerBoard  = playerBoard,
-            snapPoint    = "Ext13"
+            snapPoint    = "Ext13",
+            offset   = {x = 0, y = -0.36, x = 0},
             })
 
+
+    -- Reset Ally City counters
+    updatePlayerAllies(player)
 end
 
 
@@ -2009,13 +2077,16 @@ function gameSetup(buttonObj, autoSetup)
             for color, data in pairs(playerData) do
                 -- Selectively destroy NPC pieces
                 if data.playerType == "bot" then
+                    local destroyCards = getCardsByTagsGlobal({"PlayerOwned_" .. color}, {"Piece_Action1Card", "Piece_Action2Card", "Piece_Action3Card"})
+                    for _, obj in pairs(destroyCards) do
+                        obj.Destruct()
+                    end
+                
                     for _, object in ipairs(getObjectsWithTag("PlayerOwned_" .. color)) do
                         if object.hasTag("Piece_Disc") and #NPCDiscs < discLimit then
                             table.insert(NPCDiscs, object)
-                        elseif
-                            object.hasTag("Deck_Action1") or
-                            object.hasTag("Deck_Action2") or
-                            object.hasTag("Deck_Action3") then
+                        elseif object.type == "Deck" then
+                        
                         else
                             object.Destruct()
                         end
@@ -2346,20 +2417,6 @@ function moveToSlot(moveObj, slotName, offset)
     end
 end
 
-function combineDecks(deckObjPrimary, deckObjSecondary)
-    local card_count = deckObjSecondary.getQuantity()
-
-    for i, card in ipairs(deckObjSecondary.getObjects()) do
-        -- For each card, take object and put it into the primary deck.
-        if i < card_count then
-            deckObjPrimary.putObject(deckObjSecondary.takeObject(card))
-        else
-            -- For the final card we use 'remainder' to reference the object as the deck object no longer exists.
-            deckObjPrimary.putObject(deckObjSecondary.remainder)
-        end
-    end
-end
-
 function createCombinedActionDeck(deckNumber)
     local deckSlotObj = nil
     
@@ -2371,7 +2428,7 @@ function createCombinedActionDeck(deckNumber)
         end
     end
     
-    local baseActionDeck = nil
+    local requiredCards = getCardsByTagsGlobal({"Piece_Action" .. deckNumber .. "Card"})
     local deckPosition = {
         x = deckSlotObj.getPosition().x,
         y = deckSlotObj.getPosition().y + 0.1,
@@ -2383,18 +2440,15 @@ function createCombinedActionDeck(deckNumber)
         z = deckSlotObj.getRotation().z + 180,
         }
     
-    for _, obj in ipairs(getObjects()) do
-        for _, tag in ipairs(obj.getTags()) do
-            if tag == ("Deck_Action" .. deckNumber) then
-                if baseActionDeck == nil then
-                    baseActionDeck = obj
-                    
-                    baseActionDeck.setRotation(deckRotation)
-                    baseActionDeck.setPosition(deckPosition)
-                else
-                    combineDecks(baseActionDeck, obj)
-                end
-            end
+    local baseActionDeck = nil
+    for _, obj in ipairs(requiredCards) do
+        if baseActionDeck == nil then
+            baseActionDeck = obj
+            
+            baseActionDeck.setRotation(deckRotation)
+            baseActionDeck.setPosition(deckPosition)
+        else
+            baseActionDeck = baseActionDeck.putObject(obj)
         end
     end
 
@@ -2408,19 +2462,16 @@ function setCardSnapPoints()
     -- Royal Orders
     for _, obj in ipairs(getObjectsWithTag("Deck_RoyalOrder")) do
         setSnapPointsToDeckCards(obj, cardSnapPoints["RoyalOrder"])
-        obj.shuffle()
     end
     
     -- Grand Manifest
     for _, obj in ipairs(getObjectsWithTag("Deck_GrandManifest")) do
         setSnapPointsToDeckCards(obj, cardSnapPoints["GrandManifest"])
-        obj.shuffle()
     end
     
     -- Grand Manifest
     for _, obj in ipairs(getObjectsWithTag("Deck_Manifest")) do
         setSnapPointsToDeckCards(obj, cardSnapPoints["Manifest"])
-        obj.shuffle()
     end
 end 
 
@@ -2568,7 +2619,7 @@ function generateAllyCityCounters()
         local targetAllyType = nil
         for _, tag in ipairs(obj.getTags()) do
             if string.find(tag, "Func_AllyCounter_") then
-                targetAllyType =  string.sub(tag, 22)
+                targetAllyType =  string.sub(tag, 18)
             elseif string.find(tag, "PlayerAssigned_") then
                 targetPlayer =  string.sub(tag, 16)
             end
@@ -2582,7 +2633,12 @@ end
 
 function createAllyCityCOunter(obj, targetPlayer, targetAllyType)
     local currentValue = playerData[targetPlayer].cities[string.lower(targetAllyType)]
-    local labelPos = {0, 0.31, 0.1}
+    local labelPos = {0, 0.14, 0.1}
+    local labelScale = {x=1.32, y=1, z=1.32}
+    if targetAllyType == "White" then 
+        labelPos = {0, 0.14, -0.2}
+        labelScale = {x=1.1, y=1, z=1.1}
+    end
     
     -- Text shadow! (Weirdly the LAST label is the one rendered on top. TTS, I swear to the Gods.)
     obj.createButton({
@@ -2596,9 +2652,10 @@ function createAllyCityCOunter(obj, targetPlayer, targetAllyType)
         },
       height=0,
       width=0,
-      font_size=750,
+      font_size=1000,
       font_color={r=0, g=0, b=0, a=93}, -- Weirdly these are /100 and not /255
-      color={r=0, g=0, b=0, a=0}
+      color={r=0, g=0, b=0, a=0},
+      scale=labelScale,
       })
     -- The actual button.
     obj.createButton({
@@ -2608,9 +2665,10 @@ function createAllyCityCOunter(obj, targetPlayer, targetAllyType)
       position=labelPos,
       height=0,
       width=0,
-      font_size=750,
+      font_size=1000,
       font_color={r=255, g=255, b=255, a=255},
-      color={r=0, g=0, b=0, a=0}
+      color={r=0, g=0, b=0, a=0},
+      scale=labelScale,
       })
 end
 
@@ -2634,7 +2692,9 @@ function updateAllyCityCounter(playerColour, targetAllyType, value)
     end
 end
 
-function updatePlayerAllies(registered_object, collision_info)
+-- [→onCollisionObjectEnter]
+-- [→onCollisionObjectExit]
+function updateCollisionPlayerAllies(registered_object, collision_info)
     if registered_object ~= tableObjects.ExpeditionBoard then return end
     
     local playerColor = nil
@@ -2645,6 +2705,10 @@ function updatePlayerAllies(registered_object, collision_info)
     end
     if playerColor == nil then return end
 
+    updatePlayerAllies(playerColor)
+end
+
+function updatePlayerAllies(playerColor)
     local allyCityCounts = tableObjects.ExpeditionBoard.call("countAllyCity", "PlayerOwned_" .. playerColor)
     for allyType, allyCount in pairs(allyCityCounts) do
         updateAllyCityCounter(playerColor, allyType, allyCount)

@@ -35,6 +35,19 @@ local allyCities = {
     redCity5   = {x= 5.86, z=-2.61, allyType="Red"},
     }
 
+local royalPrestigeCorners = {
+    left    = -1.65,
+    right   = -6.95,
+    up      =  5.22,
+    down    =  7.24,
+    }
+
+local roundMarkerPositions = {
+    left    = -4.22,
+    right   = -7.72,
+    up      =  1.99,
+    down    =  2.98,
+    }
 
 function generateSnapPoints()
     for _, city in pairs(allyCities) do
@@ -60,6 +73,7 @@ end
 function setSnapPoints()
     local generatedSnapPoints = {}
     
+    -- Ally Cities
     for _, snapPoint in pairs(expeditionBoardSnapPoints) do
         table.insert(generatedSnapPoints, {
             position = {
@@ -75,6 +89,59 @@ function setSnapPoints()
             rotation_snap = snapPoint.rotation ~= nil and true or false,
             tags = snapPoint.tags or {}
             })
+    end
+    
+    -- Royal Prestige board
+    local horizontalIncrement = (royalPrestigeCorners.right - royalPrestigeCorners.left) / 11
+    local verticalIncrement = (royalPrestigeCorners.down - royalPrestigeCorners.up) / 4
+    for n=1,5,1 do
+        for i=1,12,1 do
+            table.insert(generatedSnapPoints, {
+            position = {
+                x = royalPrestigeCorners.left + horizontalIncrement*(i-1),
+                y = 0.5,
+                z = royalPrestigeCorners.up + verticalIncrement*(n-1),
+                },
+            rotation_snap = false,
+            tags = {}
+            })
+        end
+        
+        table.insert(generatedSnapPoints, {
+            position = {
+                x = royalPrestigeCorners.right - 0.58,
+                y = 0.5,
+                z = royalPrestigeCorners.up + verticalIncrement*(n-1),
+                },
+            rotation_snap = false,
+            tags = {}
+            })
+    end
+    
+    -- Round Marker / Turn Order positions
+    for i=1,6,1 do
+        local horizontalIncrement = (roundMarkerPositions.right - roundMarkerPositions.left) / 5
+    
+        table.insert(generatedSnapPoints, {
+            position = {
+                x = roundMarkerPositions.left + horizontalIncrement*(i-1),
+                y = 0.5,
+                z = roundMarkerPositions.up,
+                },
+            rotation_snap = false,
+            tags = {}
+            })
+        if i ~= 1 then
+            table.insert(generatedSnapPoints, {
+                position = {
+                    x = roundMarkerPositions.left + horizontalIncrement*(i-1),
+                    y = 0.5,
+                    z = roundMarkerPositions.down,
+                    },
+                rotation_snap = false,
+                tags = {}
+                })
+        end
     end
     
     -- Set Snap Points
