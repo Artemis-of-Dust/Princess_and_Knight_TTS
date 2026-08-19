@@ -87,7 +87,7 @@ function setSnapPoints()
                 z = 0,
                 } or nil,
             rotation_snap = snapPoint.rotation ~= nil and true or false,
-            tags = snapPoint.tags or {}
+            tags = snapPoint.tags or {"Piece_AllyCube"}
             })
     end
     
@@ -103,7 +103,7 @@ function setSnapPoints()
                 z = royalPrestigeCorners.up + verticalIncrement*(n-1),
                 },
             rotation_snap = false,
-            tags = {}
+            tags = {"Piece_CubeMarker"}
             })
         end
         
@@ -114,7 +114,7 @@ function setSnapPoints()
                 z = royalPrestigeCorners.up + verticalIncrement*(n-1),
                 },
             rotation_snap = false,
-            tags = {}
+            tags = {"Piece_CubeMarker"}
             })
     end
     
@@ -129,7 +129,7 @@ function setSnapPoints()
                 z = roundMarkerPositions.up,
                 },
             rotation_snap = false,
-            tags = {}
+            tags = {"Piece_RoundMarker"}
             })
         if i ~= 1 then
             table.insert(generatedSnapPoints, {
@@ -139,7 +139,7 @@ function setSnapPoints()
                     z = roundMarkerPositions.down,
                     },
                 rotation_snap = false,
-                tags = {}
+                tags = {"Piece_FactionMarker"}
                 })
         end
     end
@@ -159,12 +159,12 @@ function countAllyCity(objTag)
     
     for _, allyCity in pairs(allyCities) do
         local checkPos = {
-            minX = allyCity.x - 1.9,
-            maxX = allyCity.x + 1.9,
+            minX = allyCity.x - 0.86,
+            maxX = allyCity.x + 0.86,
             minY = 0,
             maxY = 1,
-            minZ = allyCity.z - 1.05,
-            maxZ = allyCity.z + 1.35,
+            minZ = allyCity.z - 0.05,
+            maxZ = allyCity.z + 0.37,
         }
         for _, obj in pairs(getObjectsWithTag(objTag)) do
             local relativePos = self.positionToLocal(obj.getPosition())

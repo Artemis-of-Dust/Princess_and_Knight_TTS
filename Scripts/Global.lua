@@ -1,4 +1,4 @@
-activeGitCommit = "6b687fc08a8872ed8ca11575d0fc1749eb4554a1"
+activeGitCommit = "fe229a111e67685d371737b64de2fd731f630a65"
 setUninteractables = true
 
 -- UTILITY FUNCTIONS
@@ -1543,7 +1543,7 @@ function generateActionDeck(deckTypes, player, factionRow)
             --   where our desired index is using the faction's row number.
             
             local baseIndex = (factionRow - 1) * deckData.NumWidth
-            local GeneratedID = i .. string.format("%02d" , (baseIndex + i))
+            local GeneratedID = i .. string.format("%02d" , (baseIndex + n))
             
             table.insert(outputObject.ContainedObjects, {
                 Name = "Card",
@@ -1751,7 +1751,7 @@ function setFaction(player, factionNum)
                         b = factionData[factionNum].colour.b,
                         a = 235
                         },
-                    tags     = {}
+                    tags     = {"Piece_AllyCube"}
                     }
                 })
     for i=1,10,1 do
@@ -1828,6 +1828,7 @@ function setFaction(player, factionNum)
                     }
                 }),
             offset   = {x=0, y=-0.36, z=0},
+            flipped  = true,
             playerBoard  = playerBoard,
             snapPoint    = "Ext5"
             })
@@ -2452,6 +2453,7 @@ function createCombinedActionDeck(deckNumber)
         end
     end
 
+    baseActionDeck.addTag("Deck_Action" .. deckNumber)
     baseActionDeck.shuffle()
 end
 
