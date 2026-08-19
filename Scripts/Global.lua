@@ -1,4 +1,4 @@
-activeGitCommit = "9428c421e8f5d115c35b472fd981d9d96e3e37fc"
+activeGitCommit = "6b687fc08a8872ed8ca11575d0fc1749eb4554a1"
 setUninteractables = true
 
 -- UTILITY FUNCTIONS
@@ -197,7 +197,7 @@ CONTINUOUS: When performing the Supply action, you may treat this as an addition
         name        = "Sforza Archducal",
         colour      = {r=236, g=232, b=210},
         deckRow     = 6,
-        playerBoard = gitLink("Factions/Sfora_Archducal/Personal_Board.webp"),
+        playerBoard = gitLink("Factions/Sforza_Archducal/Personal_Board.webp"),
         princessCardTooltipA = [[CONTINUOUS: When executing Socialise, immediately gain 1 of any resource. If all Socialise spaces have been unlocked, you may choose to advance the "Grand Duke's Evaluation" by 1 instead.]],
         princessCardTooltipB = [[CONTINUOUS: When gaining a bonus from the "Grand Duke's Evaluation Track," gain double the bonus, excluding Victory Points.
 ----------
@@ -206,15 +206,15 @@ CONTINUOUS: When advancing Grand Duke's Evaluation by 1, if the Wood Cube is alr
         knightCardTooltipB = [[INSTANT: Look at the Episode Cards not being used in the game, select 1 from among them, and play it at no cost. Return the remaining Episode Cards to the box. (They are not used during the game.)
 ----------
 CONTINUOUS: Your play limit for Episode Cards increases by the number of ☆ you have in the Grand Duke's Evaluation. (Increases by up to 4.)]],
-        actionMarkerPrincess   = gitLink("Factions/Sfora_Archducal/Action_Chip_Princess.png"),
-        actionMarkerKnight     = gitLink("Factions/Sfora_Archducal/Action_Chip_Knight.png"),
-        relationMarkerPrincess = gitLink("Factions/Sfora_Archducal/Bond_Chip.png"),
-        relationMarkerKnight   = gitLink("Factions/Sfora_Archducal/Bond_Chip_Back.png"),
-        scoreTile              = gitLink("Factions/Sfora_Archducal/70VP_Tile.webp"),
-        scoreTileBack          = gitLink("Factions/Sfora_Archducal/70VP_Tile_Back.webp"),
-        affectionTile          = gitLink("Factions/Sfora_Archducal/Affection_Tile.webp"),
-        affectionTileBack      = gitLink("Factions/Sfora_Archducal/Affection_Tile_Back.webp"),
-        factionToken           = gitLink("Factions/Sfora_Archducal/Faction_Marker.png"),
+        actionMarkerPrincess   = gitLink("Factions/Sforza_Archducal/Action_Chip_Princess.png"),
+        actionMarkerKnight     = gitLink("Factions/Sforza_Archducal/Action_Chip_Knight.png"),
+        relationMarkerPrincess = gitLink("Factions/Sforza_Archducal/Bond_Chip.png"),
+        relationMarkerKnight   = gitLink("Factions/Sforza_Archducal/Bond_Chip_Back.png"),
+        scoreTile              = gitLink("Factions/Sforza_Archducal/70VP_Tile.webp"),
+        scoreTileBack          = gitLink("Factions/Sforza_Archducal/70VP_Tile_Back.webp"),
+        affectionTile          = gitLink("Factions/Sforza_Archducal/Affection_Tile.webp"),
+        affectionTileBack      = gitLink("Factions/Sforza_Archducal/Affection_Tile_Back.webp"),
+        factionToken           = gitLink("Factions/Sforza_Archducal/Faction_Marker.png"),
         },
     {
         name        = "Spartacus Baronet",
